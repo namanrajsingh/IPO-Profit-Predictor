@@ -18,7 +18,7 @@ python manage.py makemigrations ipo_app
 python manage.py migrate
 ```
 ###  Step 4: Fill the database
-1\. In `ipo_app\management\commands\fetch_ipo_data.py` set the `years = []` according to your prefference. eg. `year=[2020,2025]` *(you can change it later too.)*
+1\. In `ipo_app\management\commands\fetch_ipo_data.py` set the `years = []` according to your prefference. eg. `year=[2020,2025]` 
 
 2\. Fetch the Upcoming ipo, IPOs from the past and create or update it in the database.
 ```cmd
