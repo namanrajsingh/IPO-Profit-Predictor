@@ -5,20 +5,25 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 import json
+from django.db import transaction
+
 
 class Command(BaseCommand):
     help = 'Fetch real IPO data from Chittorgarh'
+
     def handle(self, *args, **kwargs):
-        # self.stdout.write('Fetching upcoming IPOs...')
-        # self.fetch_upcoming_ipos()
+        
+        years = [2024,2025]
+        
+        self.stdout.write('Fetching upcoming IPOs...')
+        self.fetch_upcoming_ipos()
         self.stdout.write('\n\n-----------------------------------------\n\n')
         self.stdout.write('Fetching closed IPOs...')
-        years = [2024,2025]
-        # self.fetch_historical_ipos(years)
-        self.fetch_closed_ipo(years)
+        self.fetch_historical_ipos(years)
+        # self.fetch_closed_ipo(years)
         self.stdout.write(self.style.SUCCESS('IPO data fetch complete!'))
 
-    from django.db import transaction
+
 
     @transaction.atomic
     def fetch_upcoming_ipos(self):
@@ -125,56 +130,56 @@ class Command(BaseCommand):
         
         return resp
     
-    def fetch_closed_ipo(self, years=None):
-        created_count, updated_count = 0, 0
-        try:
-            if years and len(years) > 1:
-                start_year, end_year = years[0], years[1]
-                historical_ipos = HistoricalIPO.objects.filter(
-                    listing_date__year__gte=start_year,
-                    listing_date__year__lte=end_year
-                )
-            else:
-                historical_ipos = HistoricalIPO.objects.all()
+    # def fetch_closed_ipo(self, years=None):
+    #     created_count, updated_count = 0, 0
+    #     try:
+    #         if years and len(years) > 1:
+    #             start_year, end_year = years[0], years[1]
+    #             historical_ipos = HistoricalIPO.objects.filter(
+    #                 listing_date__year__gte=start_year,
+    #                 listing_date__year__lte=end_year
+    #             )
+    #         else:
+    #             historical_ipos = HistoricalIPO.objects.all()
 
-            for hist_ipo in historical_ipos:
-                url = f"https://www.chittorgarh.com/ipo/{hist_ipo.comapny_url_name}/{hist_ipo.company_id}/"
+    #         for hist_ipo in historical_ipos:
+    #             url = f"https://www.chittorgarh.com/ipo/{hist_ipo.comapny_url_name}/{hist_ipo.company_id}/"
                 
-                ipo_data = {
-                    'company_id': hist_ipo.company_id,
-                    'company_name': hist_ipo.company_name,
-                    'company_logo_url': hist_ipo.company_logo_url,
-                    'comapny_url_name':hist_ipo.comapny_url_name,
-                    'issue_type': hist_ipo.issue_type,
-                    'open_date': hist_ipo.open_date,
-                    'listing_date': hist_ipo.listing_date,
-                    'issue_price': hist_ipo.issue_price,
-                    'issue_size': hist_ipo.issue_size,
-                    'listing_price': hist_ipo.listing_price,
-                    'qib_subscription': hist_ipo.qib_subscription,
-                    'nii_subscription': hist_ipo.nii_subscription,
-                    'retail_subscription': hist_ipo.retail_subscription,
-                    'total_subscription': hist_ipo.total_subscription,
-                    'listing_gains_rs':hist_ipo.listing_gains_rs,
-                    'listing_gains_percent':hist_ipo.listing_gains_percent,
-                    'profit': None,  # Set default or fill from other sources if available
-                    'pe_ratio': None,  # Set default or fill from other sources if available
-                    'status': 'closed',
-                }
+    #             ipo_data = {
+    #                 'company_id': hist_ipo.company_id,
+    #                 'company_name': hist_ipo.company_name,
+    #                 'company_logo_url': hist_ipo.company_logo_url,
+    #                 'comapny_url_name':hist_ipo.comapny_url_name,
+    #                 'issue_type': hist_ipo.issue_type,
+    #                 'open_date': hist_ipo.open_date,
+    #                 'listing_date': hist_ipo.listing_date,
+    #                 'issue_price': hist_ipo.issue_price,
+    #                 'issue_size': hist_ipo.issue_size,
+    #                 'listing_price': hist_ipo.listing_price,
+    #                 'qib_subscription': hist_ipo.qib_subscription,
+    #                 'nii_subscription': hist_ipo.nii_subscription,
+    #                 'retail_subscription': hist_ipo.retail_subscription,
+    #                 'total_subscription': hist_ipo.total_subscription,
+    #                 'listing_gains_rs':hist_ipo.listing_gains_rs,
+    #                 'listing_gains_percent':hist_ipo.listing_gains_percent,
+    #                 'profit': None,  # Set default or fill from other sources if available
+    #                 'pe_ratio': None,  # Set default or fill from other sources if available
+    #                 'status': 'closed',
+    #             }
 
-                # ipo_obj, created = IPO.objects.update_or_create(
-                #     company_name=hist_ipo.company_name,
-                #     defaults=ipo_data
-                # )
-                created = True
-                if created:
-                    created_count += 1
-                else:
-                    updated_count += 1
+    #             # ipo_obj, created = IPO.objects.update_or_create(
+    #             #     company_name=hist_ipo.company_name,
+    #             #     defaults=ipo_data
+    #             # )
+    #             created = True
+    #             if created:
+    #                 created_count += 1
+    #             else:
+    #                 updated_count += 1
 
-            self.stdout.write(self.style.SUCCESS(f"Summary: {created_count} created, {updated_count} updated from HistoricalIPO."))
+    #         self.stdout.write(self.style.SUCCESS(f"Summary: {created_count} created, {updated_count} updated from HistoricalIPO."))
 
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(f"✗ Failed to fetch and add closed IPOs: {str(e)}"))
+    #     except Exception as e:
+    #         self.stdout.write(self.style.ERROR(f"✗ Failed to fetch and add closed IPOs: {str(e)}"))
 
-        return {'created': created_count, 'updated': updated_count}
+    #     return {'created': created_count, 'updated': updated_count}
