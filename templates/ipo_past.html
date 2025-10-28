@@ -1,0 +1,118 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Past IPOs</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script type="text/javascript" src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+</head>
+
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Past IPOs</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown" style="display: ruby; margin-right: 15px;">
+                        <label for="issue_type">Type</label>
+                        <select class="nav-link dropdown-toggle" name="issue_type" id="issue_type"
+                            onchange="filterSector()">
+
+                            <option class="dropdown-item" value="All"> All</option>
+                            <option class="dropdown-item" value="Mainline">Mainline</option>
+                            <option class="dropdown-item" value="SME">SME</option>
+                        </select>
+                    </li>
+
+                    <li class="nav-item" style="display: ruby;margin-right: 15px;">
+                        <label for="year">Year</label>
+                        <select class="nav-link dropdown-toggle" name="year" id="year" onchange="filterSector()">
+                            <option class="dropdown-item" value="All" selected>All</option>
+                            {%for year in years%}
+                            <option class="dropdown-item" value="{{year}}">{{year}}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Company Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Listing Date</th>
+                <th scope="col">Issue Price</th>
+                <th scope="col">Listing Price</th>
+                <th scope="col">Listing Gains</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ipo in past_ipos %}
+            <tr class="ipo_row" data-issue_type="{{ ipo.issue_type}}" data-year="{{ ipo.listing_date.year}}">
+                <td>{{ forloop.counter }}</td>
+                <th scope="row"><a href="{% url 'ipo_detail' ipo.company_id %}">{{ ipo.company_name }}</a></th>
+                <td>{{ ipo.issue_type}}</td>
+                <td>{{ ipo.listing_date}}</td>
+                <td>₹ {{ ipo.issue_price }} </td>
+                <td>₹ {{ ipo.listing_price }}</td>
+                <td>
+                    {% if ipo.listing_gains_rs > 0 %}
+                    <span class="badge text-bg-success">
+                        ₹ {{ ipo.listing_gains_rs }} ({{ ipo.listing_gains_percent }}%)
+                    </span>
+                    {% elif ipo.listing_gains_rs < 0 %} <span class="badge text-bg-danger">
+                        ₹ {{ ipo.listing_gains_rs }} ({{ ipo.listing_gains_percent }}%)
+                        </span>
+                        {% else %}
+                        <span class="badge text-bg-secondary">
+                            ₹ {{ ipo.listing_gains_rs }} ({{ ipo.listing_gains_percent }}%)
+                        </span>
+                        {% endif %}
+                </td>
+
+            </tr>
+            {% endfor %}
+
+            </tr>
+        </tbody>
+    </table>
+
+    <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+    <script type="text/javascript">
+        function filterSector() {
+            // Get selected values
+            var selectedType = $('#issue_type').val();
+            var selectedYear = $('#year').val();
+
+            $('tr.ipo_row').each(function () {
+                var rowType = $(this).data('issue_type');
+                var rowYear = $(this).data('year').toString();
+
+                // Determine visibility
+                var typeMatches = (selectedType === 'All' || rowType === selectedType);
+                var yearMatches = (selectedYear === 'All' || rowYear === selectedYear);
+
+                if (typeMatches && yearMatches) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upcoming IPOs</title>
+    <style>
+        body { font-family: Arial; background-color: #f4f6f8; margin: 20px; }
+        .ipo-card { background: white; border-radius: 10px; padding: 20px; margin: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .ipo-card:hover { transform: scale(1.02); }
+        h1 { color: #667eea; text-align: center; }
+        a { text-decoration: none; color: #333; }
+    </style>
+</head>
+<body>
+<h1>Past IPOs</h1>
+{% if past_ipos %}
+    {% for ipo in past_ipos %}
+        <div class="ipo-card">
+            <h2><a href="{% url 'ipo_detail' ipo.id %}">{{ ipo.company_name }}</a></h2>
+            <span data-issue_type="{{ ipo.issue_type}}">Type: {{ ipo.issue_type}}</span>
+            <p data-listing_date="{{ipo.listing_date}}">Listing Date: {{ ipo.listing_date}}</p>
+            <p>Issue Price: ₹{{ ipo.issue_price }}       |    Listing Price: ₹{{ ipo.listing_price }}</p>
+            <p></p>
+            <p>Listing Gains: ₹{{ ipo.listing_gains_rs }} ({{ ipo.listing_gains_percent }}%)</p>
+            
+            <!-- <p>Predicted Gain: {{ ipo.predicted_gain }}%</p> -->
+        </div>
+    {% endfor %}
+
+    
+</body>
+</html> 

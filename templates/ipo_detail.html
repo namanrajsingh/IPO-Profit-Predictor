@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ ipo.company_name }} - IPO Details</title>
+    <style>
+        body { font-family: Arial; background-color: #f4f6f8; margin: 20px; }
+        .container { background: white; padding: 30px; border-radius: 10px; }
+        h1 { color: #667eea; }
+        .similar-list { margin-top: 30px; }
+        .similar-card { background: #f1f3f6; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>{{ ipo.company_name }}</h1>
+    <p>Issue Price: ₹{{ ipo.issue_price }}</p>
+    <p>Issue Size: ₹{{ ipo.issue_size }} Crores</p>
+    <p>Predicted Listing Gain: {{ ipo.predicted_gain }}%</p>
+
+    <h2>Similar IPOs</h2>
+    <div class="similar-list">
+        {% for s in similar_ipos %}
+            <div class="similar-card">
+                <h3>{{ s.similar_ipo_name }} ({{ s.similarity_score }}% match)</h3>
+                <p>Listing Gain: {{ s.similar_listing_gain }}%</p>
+            </div>
+        {% empty %}
+            <p>No similar IPOs found.</p>
+        {% endfor %}
+    </div>
+    <a href="/">← Back to All IPOs</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Past IPOs</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script type="text/javascript" src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <style>
+        .card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card img {
+            height: 30%;
+            width: 75%;
+        }
+    </style>
+</head>
+
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Upcomming IPOs</a>
+            
+            </div>
+    </nav>
+    <div class="container-fluid">
+
+        {% if upcoming_ipos %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for ipo in upcoming_ipos %}
+            <div class="col card" data-issue_type="{{ ipo.issue_type}}">
+                <div class="card h-100">
+                    <img src="{{ ipo.object.company_logo_url }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'ipo_detail' ipo.object.company_id %}">{{ ipo.object.company_name }}</a>
+                        </h5>
+                        <span>Type: {{ ipo.object.issue_type }}</span>
+                        <p>Open: {{ ipo.object.open_date }} | Close: {{ ipo.object.close_date }}</p>
+                        <p>Predicted Gain: {{ ipo.object.predicted_gain }}%</p>
+                        <p>
+                            {% if ipo.days_remaining != None %}
+                            <strong>{{ ipo.days_remaining }} days remaining</strong>
+                            {% else %}
+                            <em>Date TBA</em>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% else %}
+            <p>No upcoming IPOs found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+
+    <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+
+</body>
+
+</html>
